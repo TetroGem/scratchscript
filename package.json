@@ -1,0 +1,27 @@
+{
+  "name": "scratchscript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "adm-zip": "^0.5.10",
+    "eslint": "^8.36.0",
+    "fs": "^0.0.1-security",
+    "js-string-escape": "^1.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.2",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.5.0",
+    "@types/js-string-escape": "^1.0.1",
+    "@types/node": "^18.15.7",
+    "@types/uuid": "^9.0.1"
+  }
+}
