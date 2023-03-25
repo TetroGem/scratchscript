@@ -1,5 +1,10 @@
-Sprite vert;
-Sprite horiz;
+Sprite vert {
+    Costume costume1 "../res/bcf454acf82e4504149f7ffe07081dbc.svg";
+}
+
+Sprite horiz {
+    Costume costume1 "../res/bcf454acf82e4504149f7ffe07081dbc.svg";
+}
 
 vert.onFlag {
     @initialize;

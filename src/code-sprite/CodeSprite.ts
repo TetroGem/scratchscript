@@ -1,16 +1,22 @@
-import { CodeScope } from "../code-scope/CodeScope";
 import { v4 as uuidv4 } from 'uuid';
+import { EventScope } from "../code-scope/EventScope";
+import { ConfigScope } from "../code-scope/ConfigScope";
+import { CodeFile } from '../sprite-config/CodeFile';
 
 export class CodeSprite {
     readonly uuid = uuidv4();
-    private scopes: CodeScope[] = [];
+    private eventScopes: EventScope[] = [];
+    private configScope: ConfigScope | null = null;
 
     constructor(
         readonly name: string,
     ) {}
 
-    toScratch(): string {
-        const scopeJSONs = this.scopes.map(scope => scope.toScratch());
+    toScratch(sourceDir: string): { json: string, files: CodeFile[] } {
+        if(this.configScope === null) throw new Error(`Sprite ${this.name} was never configured!`);
+
+        const eventJSON = this.eventScopes.map(scope => scope.toScratch()).join(',\n');
+        const { files, costumesJSON } = this.configScope.toScratch(sourceDir);
 
         const json = `
         {
@@ -20,29 +26,12 @@ export class CodeSprite {
             "lists": {},
             "broadcasts": {},
             "blocks": {
-                ${scopeJSONs.join(',\n')}
+                ${eventJSON}
             },
             "comments": {},
             "currentCostume": 0,
             "costumes": [
-                {
-                    "name": "costume1",
-                    "bitmapResolution": 1,
-                    "dataFormat": "svg",
-                    "assetId": "bcf454acf82e4504149f7ffe07081dbc",
-                    "md5ext": "bcf454acf82e4504149f7ffe07081dbc.svg",
-                    "rotationCenterX": 48,
-                    "rotationCenterY": 50
-                },
-                {
-                    "name": "costume2",
-                    "bitmapResolution": 1,
-                    "dataFormat": "svg",
-                    "assetId": "0fb9be3e8397c983338cb71dc84d0b25",
-                    "md5ext": "0fb9be3e8397c983338cb71dc84d0b25.svg",
-                    "rotationCenterX": 46,
-                    "rotationCenterY": 53
-                }
+                ${costumesJSON}
             ],
             "sounds": [
                 {
@@ -67,10 +56,15 @@ export class CodeSprite {
         }
         `;
 
-        return json;
+        return { json, files };
     }
 
-    addScope(scope: CodeScope): void {
-        this.scopes.push(scope);
+    addEvent(scope: EventScope): void {
+        this.eventScopes.push(scope);
+    }
+
+    setConfig(scope: ConfigScope): void {
+        if(this.configScope !== null) throw new Error(`Config for Sprite ${this.name} was already defined!`);
+        this.configScope = scope;
     }
 }

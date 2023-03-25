@@ -12,6 +12,7 @@ async function main() {
 
     const inputScriptPath = path.resolve(inputArg);
     const filename = path.basename(inputScriptPath).split('.').slice(0, -1).join('.');
+    const inputScriptDir = path.dirname(inputScriptPath);
 
     const outputArg = process.argv[3] ?? path.dirname(inputScriptPath);
     const outputProjectPath = path.extname(outputArg) === ''
@@ -29,16 +30,19 @@ async function main() {
 
     const runner = new CodeRunner();
     runner.run(cleaned);
-    const compiledJSON = temporaryStageWrapper(runner.toScratch());
+    const { json, files } = runner.toScratch(inputScriptDir);
+    const compiledJSON = temporaryStageWrapper(json);
     const minifiedJSON = JSON.stringify(JSON.parse(compiledJSON));
 
     const zip = new AdmZip();
     zip.addFile('project.json', Buffer.from(minifiedJSON, 'utf-8'));
-    zip.addLocalFile(path.resolve(__dirname, '../res/0fb9be3e8397c983338cb71dc84d0b25.svg'));
+    for(const file of files) {
+        console.log(file.absoluteFilePath);
+        zip.addLocalFile(file.absoluteFilePath, '', file.scratchName);
+    }
+    zip.addLocalFile(path.resolve(__dirname, '../res/cd21514d0531fdffb22204e0ec5ed84a.svg'));
     zip.addLocalFile(path.resolve(__dirname, '../res/83a9787d4cb6f3b7632b4ddfebf74367.wav'));
     zip.addLocalFile(path.resolve(__dirname, '../res/83c36d806dc92327b9e7049a565c6bff.wav'));
-    zip.addLocalFile(path.resolve(__dirname, '../res/bcf454acf82e4504149f7ffe07081dbc.svg'));
-    zip.addLocalFile(path.resolve(__dirname, '../res/cd21514d0531fdffb22204e0ec5ed84a.svg'));
     await zip.writeZipPromise(outputProjectPath);
 
     console.log("Done!");

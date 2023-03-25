@@ -3,6 +3,7 @@ import { ObjectValues } from "../types/ObjectValues";
 import { CodeScope } from "./CodeScope";
 import { v4 as uuidv4 } from 'uuid';
 import { EventField } from "./EventField";
+import { SpriteActions } from "../code-action/SpriteActions";
 
 export const EventType = {
     OnFlag: 'event_whenflagclicked',
@@ -20,6 +21,20 @@ export class EventScope extends CodeScope {
         private readonly fields: readonly EventField[],
     ) {
         super();
+    }
+
+    override runCommand(line: string): void {
+        const comps = line.split(' ');
+        const command = comps[0];
+        if(command === undefined) throw new Error(`Undefined command! (${line})`);
+
+        if(command.startsWith('@')) {
+            const actionName = command.substring(1);
+            const args = comps.slice(1);
+            const codeActions = SpriteActions.createActions(actionName, args);
+
+            this.addActions(...codeActions);
+        } else throw new Error(`Unknown command: ${command}! (${line})`);
     }
 
     toScratch(): string {

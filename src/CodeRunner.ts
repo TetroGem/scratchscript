@@ -1,12 +1,15 @@
 import { Instruction, InstructionType, CodeParser } from "./CodeParser";
 import { SpriteActions } from "./code-action/SpriteActions";
+import { CodeScope } from "./code-scope/CodeScope";
+import { ConfigScope } from "./code-scope/ConfigScope";
 import { EventField } from "./code-scope/EventField";
 import { EventFields } from "./code-scope/EventFields";
 import { EventScope, EventType } from "./code-scope/EventScope";
 import { CodeSprite } from "./code-sprite/CodeSprite";
+import { CodeFile } from "./sprite-config/CodeFile";
 
 export class CodeRunner {
-    private scope: EventScope | null = null;
+    private scope: CodeScope | null = null;
     private readonly sprites = new Map<string, CodeSprite>();
 
     run(code: string) {
@@ -20,15 +23,21 @@ export class CodeRunner {
         }
     }
 
-    toScratch(): string {
-        const json = [...this.sprites.values()].map(sprite => sprite.toScratch()).join(',\n');
-        return json;
-    }
+    toScratch(sourceDir: string): { json: string, files: CodeFile[] } {
+        const sprites = [...this.sprites.values()];
+        const spriteJSONs: string[] = [];
+        const spriteFiles: CodeFile[] = [];
+        for(const sprite of sprites) {
+            const { json, files } = sprite.toScratch(sourceDir);
+            spriteJSONs.push(json);
+            spriteFiles.push(...files);
+        }
 
-    private enterScope(sprite: CodeSprite, event: EventType, fields: readonly EventField[]): void {
-        const scope = new EventScope(event, fields);
-        sprite.addScope(scope);
-        this.scope = scope;
+        const spritesJSON = spriteJSONs.join(',\n');
+        return {
+            json: spritesJSON,
+            files: spriteFiles,
+        };
     }
 
     private exitScope(): void {
@@ -42,25 +51,8 @@ export class CodeRunner {
 
         switch(type) {
             case InstructionType.Command: {
-                const command = comps[0];
-                if(command === undefined) throw new Error(`No command specified! (${code})`);
-
-                if(command.startsWith('@')) {
-                    const actionName = command.substring(1);
-                    const args = comps.slice(1);
-                    const codeActions = SpriteActions.createActions(actionName, args);
-
-                    if(this.scope === null) throw new Error('Cannot access action outside of a Sprite\'s event scope!');
-                    this.scope.addActions(...codeActions);
-                } else if(command === "Sprite") {
-                    const spriteName = comps[1];
-                    if(spriteName === undefined) throw new Error(`Sprite must be given a name! (${code})`);
-
-                    const sprite = new CodeSprite(spriteName);
-                    this.sprites.set(spriteName, sprite);
-                } else {
-                    throw new Error(`Unknown command: ${command}! (${code})`);
-                }
+                if(this.scope === null) throw new Error(`Cannot run commands outside of a scope! (${code})`);
+                this.scope.runCommand(code);
                 break;
             }
 
@@ -71,25 +63,43 @@ export class CodeRunner {
                 const [eventSection, fieldsSection] = header.split(':');
                 if(eventSection === undefined) throw new Error(`No event in header! ${code}`);
 
-                const [spriteName, event] = eventSection.split('.');
-                if(spriteName === undefined) throw new Error(`No sprite at start of block open! (${code})`);
+                if(header === "Sprite") {
+                    const spriteName = comps[1];
+                    if(spriteName === undefined) throw new Error(`Sprite name is undefined! (${code})`);
 
-                const sprite = this.sprites.get(spriteName);
-                if(sprite === undefined) throw new Error(`Sprite '${spriteName} does not exist! (${code})`);
-
-                const eventType: EventType = (() => {
-                    switch(event) {
-                        case "onFlag": return EventType.OnFlag;
-                        case "onClick": return EventType.OnClick;
-                        case "onKeyPress": return EventType.OnKeyPress;
-                        default: throw new Error(`Invalid event type '${event}' of Sprite! (${code})`);
+                    if(this.sprites.has(spriteName)) {
+                        throw new Error(`Sprite with name ${spriteName} already exists! (${code})`);
                     }
-                })();
 
-                const fields = fieldsSection?.split(' ') ?? [];
-                const eventFields = EventFields.createFields(eventType, fields);
+                    const scope = new ConfigScope();
+                    this.scope = scope;
 
-                this.enterScope(sprite, eventType, eventFields);
+                    const sprite = new CodeSprite(spriteName);
+                    sprite.setConfig(scope);
+                    this.sprites.set(spriteName, sprite);
+                } else {
+                    const [spriteName, event] = eventSection.split('.');
+                    if(spriteName === undefined) throw new Error(`No sprite at start of block open! (${code})`);
+
+                    const sprite = this.sprites.get(spriteName);
+                    if(sprite === undefined) throw new Error(`Sprite '${spriteName} does not exist! (${code})`);
+
+                    const eventType: EventType = (() => {
+                        switch(event) {
+                            case "onFlag": return EventType.OnFlag;
+                            case "onClick": return EventType.OnClick;
+                            case "onKeyPress": return EventType.OnKeyPress;
+                            default: throw new Error(`Invalid event type '${event}' of Sprite! (${code})`);
+                        }
+                    })();
+
+                    const fields = fieldsSection?.split(' ') ?? [];
+                    const eventFields = EventFields.createFields(eventType, fields);
+
+                    const scope = new EventScope(eventType, eventFields);
+                    this.scope = scope;
+                    sprite.addEvent(scope);
+                }
                 break;
             }
 
