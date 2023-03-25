@@ -1,5 +1,7 @@
 import { Instruction, InstructionType, CodeParser } from "./CodeParser";
 import { SpriteActions } from "./code-action/SpriteActions";
+import { EventField } from "./code-scope/EventField";
+import { EventFields } from "./code-scope/EventFields";
 import { EventScope, EventType } from "./code-scope/EventScope";
 import { CodeSprite } from "./code-sprite/CodeSprite";
 
@@ -23,8 +25,8 @@ export class CodeRunner {
         return json;
     }
 
-    private enterScope(sprite: CodeSprite, event: EventType): void {
-        const scope = new EventScope(event);
+    private enterScope(sprite: CodeSprite, event: EventType, fields: readonly EventField[]): void {
+        const scope = new EventScope(event, fields);
         sprite.addScope(scope);
         this.scope = scope;
     }
@@ -66,7 +68,10 @@ export class CodeRunner {
                 const header = comps[0];
                 if(header === undefined) throw new Error(`No header given for block! (${code})`);
 
-                const [spriteName, event] = header.split('.');
+                const [eventSection, fieldsSection] = header.split(':');
+                if(eventSection === undefined) throw new Error(`No event in header! ${code}`);
+
+                const [spriteName, event] = eventSection.split('.');
                 if(spriteName === undefined) throw new Error(`No sprite at start of block open! (${code})`);
 
                 const sprite = this.sprites.get(spriteName);
@@ -76,11 +81,15 @@ export class CodeRunner {
                     switch(event) {
                         case "onFlag": return EventType.OnFlag;
                         case "onClick": return EventType.OnClick;
+                        case "onKeyPress": return EventType.OnKeyPress;
                         default: throw new Error(`Invalid event type '${event}' of Sprite! (${code})`);
                     }
                 })();
 
-                this.enterScope(sprite, eventType);
+                const fields = fieldsSection?.split(' ') ?? [];
+                const eventFields = EventFields.createFields(eventType, fields);
+
+                this.enterScope(sprite, eventType, eventFields);
                 break;
             }
 

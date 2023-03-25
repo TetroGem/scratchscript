@@ -1,7 +1,30 @@
-Sprite cat;
+Sprite vert;
+Sprite horiz;
 
-cat.onFlag {
-    @initialize; # resets all properties of the Sprite to their default values
-    @goto -50 -50;
+vert.onFlag {
+    @initialize;
+}
+
+horiz.onFlag {
+    @initialize;
+}
+
+vert.onKeyPress : UpArrow {
+    @point 0;
+    @walk 30;
+}
+
+vert.onKeyPress : DownArrow {
+    @point 180;
+    @walk 30;
+}
+
+horiz.onKeyPress : LeftArrow {
     @point 270;
+    @walk 30;
+}
+
+horiz.onKeyPress : RightArrow {
+    @point 90;
+    @walk 30;
 }

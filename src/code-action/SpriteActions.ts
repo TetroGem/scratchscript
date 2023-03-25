@@ -36,7 +36,7 @@ export namespace SpriteActions {
             case SpriteActionName.Initialize: {
                 return [
                     ...createActions("goto", ["0", "0"]),
-                    ...createActions("point", ["0"]),
+                    ...createActions("point", ["90"]),
                 ];
             }
             default: return [new SpriteAction(spriteAction, spriteArgs)];

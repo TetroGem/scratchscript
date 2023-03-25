@@ -2,10 +2,12 @@ import { SpriteAction } from "../code-action/SpriteAction";
 import { ObjectValues } from "../types/ObjectValues";
 import { CodeScope } from "./CodeScope";
 import { v4 as uuidv4 } from 'uuid';
+import { EventField } from "./EventField";
 
 export const EventType = {
     OnFlag: 'event_whenflagclicked',
     OnClick: 'event_whenthisspriteclicked',
+    OnKeyPress: 'event_whenkeypressed',
 } as const;
 export type EventType = ObjectValues<typeof EventType>;
 
@@ -15,11 +17,14 @@ export class EventScope extends CodeScope {
 
     constructor(
         private readonly event: EventType,
+        private readonly fields: readonly EventField[],
     ) {
         super();
     }
 
     toScratch(): string {
+        const fieldsJSON = this.fields.map(field => field.toScratch()).join(',\n');
+
         const nextUUID = this.actions[0]?.uuid ?? null;
         const json = `
         "${this.uuid}": {
@@ -27,7 +32,9 @@ export class EventScope extends CodeScope {
             "next": ${nextUUID === null ? null : `"${nextUUID}"`},
             "parent": null,
             "inputs": {},
-            "fields": {},
+            "fields": {
+                ${fieldsJSON}
+            },
             "shadow": false,
             "topLevel": true,
             "x": 0,
