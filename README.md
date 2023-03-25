@@ -1,5 +1,6 @@
 # ScratchScript
 *A text-based programming language that compiles to Scratch 3.0 Projects (.sb3)*
+<br>
 This project is still heavily unfinished and WIP. New updates must be installed manually by redownloading this repository and following all the setup instructions below again. Please report any bugs you find in the Issues tab!
 <br><br>
 *Created by [@TetroGem](https://github.com/TetroGem)*
