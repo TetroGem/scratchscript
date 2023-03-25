@@ -6,8 +6,10 @@ import { v4 as uuidv4 } from 'uuid';
 export const SpriteActionName = {
     Walk: 'motion_movesteps',
     Wait: 'control_wait',
-    Turn: 'motion_turnright',
+    Turn: 'motion_turnleft',
     Say: 'looks_sayforsecs',
+    GoTo: 'motion_gotoxy',
+    Point: 'motion_pointindirection',
 } as const;
 export type SpriteActionName = ObjectValues<typeof SpriteActionName>;
 
@@ -58,6 +60,15 @@ export const typeVals = {
             return new ActionArgument(argName, CodeType.PositiveFloat, str);
         });
     },
+    angle: (argName: string) => {
+        return new TypeValidator(argName, (arg: string): ActionArgument => {
+            if(/-?[0-9]+(.[0-9]+)?/.exec(arg)?.[0] !== arg) throw new Error(`${arg} is not an Angle! (-360 to 360)`);
+            const angle = parseFloat(arg);
+            if(angle > 360 || angle < -360) throw new Error(`${arg} is not an Angle! (-360 to 360)`);
+            const mappedAngle = String(angle > 180 ? -(360 - angle) : (angle < -180 ? -(-360 - angle) : angle));
+            return new ActionArgument(argName, CodeType.Angle, mappedAngle);
+        });
+    },
 } as const;
 
 export const spriteActionArguments = {
@@ -65,6 +76,8 @@ export const spriteActionArguments = {
     [SpriteActionName.Wait]: [typeVals.posFloat("DURATION")],
     [SpriteActionName.Turn]: [typeVals.float("DEGREES")],
     [SpriteActionName.Say]: [typeVals.string("MESSAGE"), typeVals.float("SECS")],
+    [SpriteActionName.GoTo]: [typeVals.float("X"), typeVals.float("Y")],
+    [SpriteActionName.Point]: [typeVals.angle("DIRECTION")],
 } as const;
 
 export class SpriteAction {

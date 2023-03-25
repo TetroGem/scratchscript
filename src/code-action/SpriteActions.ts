@@ -7,6 +7,8 @@ export namespace SpriteActions {
             case "wait": return SpriteActionName.Wait;
             case "turn": return SpriteActionName.Turn;
             case "say": return SpriteActionName.Say;
+            case "goto": return SpriteActionName.GoTo;
+            case "point": return SpriteActionName.Point;
             default: throw new Error(`Unknown Sprite action '${action}!'`);
         }
     }

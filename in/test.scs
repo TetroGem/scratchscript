@@ -1,40 +1,6 @@
 Sprite cat;
-Sprite otherCat;
 
 cat.onFlag {
-    @walk 10;
-    @wait 0.5;
-    @walk 20;
-    @wait 0.5;
-    @walk -50;
-    @say "hello there" 1;
-    @turn 45;
-}
-
-cat.onClick {
-    @say "ouch" 0.1;
-    @wait 0.1;
-    @turn 45;
-    @wait 0.1;
-    @turn 45;
-    @wait 0.1;
-    @turn 45;
-    @wait 0.1;
-    @turn 45;
-    @wait 0.1;
-    @turn 45;
-    @wait 0.1;
-    @turn 45;
-}
-
-otherCat.onFlag {
-    @walk 100;
-    @wait 1.3;
-    @walk -50;
-    @wait 0.2;
-    @walk -20;
-    @wait 0.2;
-    @walk -10;
-    @wait 0.2;
-    @walk -5;
+    @goto -50 -50;
+    @point 270;
 }
