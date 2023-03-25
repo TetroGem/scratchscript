@@ -1,7 +1,5 @@
-import { Instruction, InstructionType, LineParser } from "./LineParser";
-import { SpriteAction } from "./code-action/SpriteAction";
+import { Instruction, InstructionType, CodeParser } from "./CodeParser";
 import { SpriteActions } from "./code-action/SpriteActions";
-import { CodeScope } from "./code-scope/CodeScope";
 import { EventScope, EventType } from "./code-scope/EventScope";
 import { CodeSprite } from "./code-sprite/CodeSprite";
 
@@ -12,7 +10,7 @@ export class CodeRunner {
     run(code: string) {
         let unparsedCode: string | null = code;
         while(unparsedCode !== null) {
-            const { nextInstruction, restCode } = LineParser.nextSection(unparsedCode);
+            const { nextInstruction, restCode } = CodeParser.nextSection(unparsedCode);
             console.log(nextInstruction);
             unparsedCode = restCode;
 

@@ -2,7 +2,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { CodeRunner } from './CodeRunner';
-import { LineParser } from './LineParser';
+import { CodeParser } from './CodeParser';
 import AdmZip from 'adm-zip';
 
 async function main() {
@@ -24,7 +24,7 @@ async function main() {
 
     const code = await fs.readFile(inputScriptPath, 'utf-8');
     console.log(code);
-    const cleaned = LineParser.clean(code);
+    const cleaned = CodeParser.clean(code);
     console.log(cleaned);
 
     const runner = new CodeRunner();

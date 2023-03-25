@@ -1,7 +1,7 @@
 Sprite cat;
 
 cat.onFlag {
-    @initialize;
+    @initialize; # resets all properties of the Sprite to their default values
     @goto -50 -50;
     @point 270;
 }

@@ -22,9 +22,11 @@ const breakCharacters = {
     ')': InstructionType.CloseExpression,
 } as const;
 
-export namespace LineParser {
+export namespace CodeParser {
     export function clean(code: string): string {
         return code
+            // remove all comments
+            .split('\n').map(line => line.split('#')[0]).join('\n')
             // encode all strings
             .replaceAll(/"(.*)"/g, str => `"${encodeURIComponent(str.substring(1, str.length - 1))}"`)
             // convert all whitespace to just a single space
