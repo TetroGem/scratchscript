@@ -6,7 +6,7 @@ import { EventScope, EventType } from "./code-scope/EventScope";
 import { CodeSprite } from "./code-sprite/CodeSprite";
 
 export class CodeRunner {
-    private scope: CodeScope | null = null;
+    private scope: EventScope | null = null;
     private readonly sprites = new Map<string, CodeSprite>();
 
     run(code: string) {
@@ -47,18 +47,11 @@ export class CodeRunner {
 
                 if(command.startsWith('@')) {
                     const actionName = command.substring(1);
-                    const spriteAction = SpriteActions.verifyAction(actionName);
-
                     const args = comps.slice(1);
-                    const spriteArgs = SpriteActions.verifyArguments(spriteAction, args);
+                    const codeActions = SpriteActions.createActions(actionName, args);
 
-                    const codeAction = new SpriteAction(spriteAction, spriteArgs);
-
-                    if(!(this.scope instanceof EventScope)) {
-                        throw new Error('Cannot access action of Sprite in Global Scope!');
-                    }
-
-                    this.scope.addAction(codeAction);
+                    if(this.scope === null) throw new Error('Cannot access action outside of a Sprite\'s event scope!');
+                    this.scope.addActions(...codeActions);
                 } else if(command === "Sprite") {
                     const spriteName = comps[1];
                     if(spriteName === undefined) throw new Error(`Sprite must be given a name! (${code})`);

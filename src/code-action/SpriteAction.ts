@@ -10,6 +10,7 @@ export const SpriteActionName = {
     Say: 'looks_sayforsecs',
     GoTo: 'motion_gotoxy',
     Point: 'motion_pointindirection',
+    Initialize: 'scs_initialize',
 } as const;
 export type SpriteActionName = ObjectValues<typeof SpriteActionName>;
 
@@ -78,6 +79,7 @@ export const spriteActionArguments = {
     [SpriteActionName.Say]: [typeVals.string("MESSAGE"), typeVals.float("SECS")],
     [SpriteActionName.GoTo]: [typeVals.float("X"), typeVals.float("Y")],
     [SpriteActionName.Point]: [typeVals.angle("DIRECTION")],
+    [SpriteActionName.Initialize]: [],
 } as const;
 
 export class SpriteAction {

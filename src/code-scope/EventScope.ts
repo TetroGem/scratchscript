@@ -45,7 +45,7 @@ export class EventScope extends CodeScope {
         return [json, ...actionJSONs].join(',\n');
     }
 
-    addAction(action: SpriteAction): void {
-        this.actions.push(action);
+    addActions(...actions: SpriteAction[]): void {
+        this.actions.push(...actions);
     }
 }

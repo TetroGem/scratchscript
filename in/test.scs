@@ -1,6 +1,7 @@
 Sprite cat;
 
 cat.onFlag {
+    @initialize;
     @goto -50 -50;
     @point 270;
 }
