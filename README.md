@@ -30,25 +30,31 @@ This project is still heavily unfinished and WIP. New updates must be installed 
 
 ### Sprites
 The first costume inside of a Sprite's Config Scope will be the default costume for that Sprite.
+Properties of sprites can be accessed by using the sprite's name followed by a period then the property name (e.g. `player.onFlag`) in the Global Scope. Inside of a Sprite's Scope (either the Config or Event Scope), the sprite's name is omitted and replaced by an @ sign (e.g. `@initialize`).
 
-### Events
+### Event Properties
 - onFlag: Runs when the green flag is clicked
 - onClick: Runs when the sprite is clicked
 - onKeyPress : (Space | UpArrow | DownArrow | LeftArrow | RIghtArrow): Runs when the specified key is pressed
 
-### Actions
-- @walk (Float steps): Move the Sprite in the direction it is pointing
-- @wait (PositiveFloat duration): Waits for the specified duration (in seconds) before performing its next Action
-- @turn (Float degrees): Turns the Sprite the specified number of degrees
-- @say (String message) (Float secs): Makes the Sprite say the specified message for the specified duration (in seconds)
-- @goto (Float x) (Float y): Teleports the Sprite to the specified coordinates
-- @point (Angle degrees): Points the Sprite in the specified direction
-- @initialize: Sets the Sprite back to its default state
+### Action Properties
+- walk (Float steps): Move the Sprite in the direction it is pointing
+- wait (PositiveFloat duration): Waits for the specified duration (in seconds) before performing its next Action
+- turn (Float degrees): Turns the Sprite the specified number of degrees
+- say (String message) (Float secs): Makes the Sprite say the specified message for the specified duration (in seconds)
+- goto (Float x) (Float y): Teleports the Sprite to the specified coordinates
+- point (Angle degrees): Points the Sprite in the specified direction
+- initialize: Sets the Sprite back to its default state
+- costume: Changes the Sprite's costume to the specified Costume
+
+## Costume Properties
+Costumes defined in the Config Scope of a Sprite are stored as properties of that Sprite. They can then be accessed like any other property of a Sprite when needed. (e.g. Declaring a costume 'main' with `Costume main "image.png";` then switching to it with `@costume @main;`)
 
 ### Example
 ```ruby
 Sprite player {
     Costume main "./player.png";
+    Costume talking "./playerTalking.png";
 }
 
 player.onFlag {
@@ -56,7 +62,9 @@ player.onFlag {
 }
 
 player.onClick {
+    @costume @talking;
     @say "Hello!" 2;
+    @costume @main;
 }
 
 player.onKeyPress : UpArrow {
@@ -70,8 +78,8 @@ player.onKeyPress : DownArrow {
 }
 
 player.onKeyPress : LeftArrow {
-    @point 270;
-    @walk 30;
+    @point 90;
+    @walk -30;
 }
 
 player.onKeyPress : RightArrow {

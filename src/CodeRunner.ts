@@ -1,8 +1,6 @@
 import { Instruction, InstructionType, CodeParser } from "./CodeParser";
-import { SpriteActions } from "./code-action/SpriteActions";
 import { CodeScope } from "./code-scope/CodeScope";
 import { ConfigScope } from "./code-scope/ConfigScope";
-import { EventField } from "./code-scope/EventField";
 import { EventFields } from "./code-scope/EventFields";
 import { EventScope, EventType } from "./code-scope/EventScope";
 import { CodeSprite } from "./code-sprite/CodeSprite";
@@ -96,7 +94,7 @@ export class CodeRunner {
                     const fields = fieldsSection?.split(' ') ?? [];
                     const eventFields = EventFields.createFields(eventType, fields);
 
-                    const scope = new EventScope(eventType, eventFields);
+                    const scope = new EventScope(sprite, eventType, eventFields);
                     this.scope = scope;
                     sprite.addEvent(scope);
                 }

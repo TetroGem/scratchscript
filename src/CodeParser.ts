@@ -34,7 +34,7 @@ export namespace CodeParser {
             // remove all whitespace with a symbol on its left
             .replaceAll(/[^\w-"]+\s+/g, str => str.replaceAll(/\s+/g, ''))
             // remove all whitespace with a symbol on its right
-            .replaceAll(/\s+[^\w-"]+/g, str => str.replaceAll(/\s+/g, ''))
+            .replaceAll(/\s+[^\w-"@]+/g, str => str.replaceAll(/\s+/g, ''))
             ;
     }
 

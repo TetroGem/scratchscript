@@ -37,7 +37,6 @@ async function main() {
     const zip = new AdmZip();
     zip.addFile('project.json', Buffer.from(minifiedJSON, 'utf-8'));
     for(const file of files) {
-        console.log(file.absoluteFilePath);
         zip.addLocalFile(file.absoluteFilePath, '', file.scratchName);
     }
     zip.addLocalFile(path.resolve(__dirname, '../res/cd21514d0531fdffb22204e0ec5ed84a.svg'));

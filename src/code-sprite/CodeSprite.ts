@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { EventScope } from "../code-scope/EventScope";
 import { ConfigScope } from "../code-scope/ConfigScope";
 import { CodeFile } from '../sprite-config/CodeFile';
+import { SpriteCostume } from '../sprite-config/SpriteCostume';
 
 export class CodeSprite {
     readonly uuid = uuidv4();
@@ -66,5 +67,10 @@ export class CodeSprite {
     setConfig(scope: ConfigScope): void {
         if(this.configScope !== null) throw new Error(`Config for Sprite ${this.name} was already defined!`);
         this.configScope = scope;
+    }
+
+    getCostume(name: string): SpriteCostume | undefined {
+        if(this.configScope === null) throw new Error(`Cannot get Costume before Sprite is configured!`);
+        return this.configScope.getCostume(name);
     }
 }

@@ -1,3 +1,4 @@
+import { CodeSprite } from "../code-sprite/CodeSprite";
 import { ActionArgument, SpriteAction, SpriteActionName, spriteActionArguments } from "./SpriteAction";
 
 export namespace SpriteActions {
@@ -10,11 +11,16 @@ export namespace SpriteActions {
             case "goto": return SpriteActionName.GoTo;
             case "point": return SpriteActionName.Point;
             case "initialize": return SpriteActionName.Initialize;
-            default: throw new Error(`Unknown Sprite action '${action}!'`);
+            case "costume": return SpriteActionName.Costume;
+            default: throw new Error(`Unknown Sprite action '${action}'!`);
         }
     }
 
-    export function verifyArguments(action: SpriteActionName, args: readonly string[]): readonly ActionArgument[] {
+    export function verifyArguments(
+        sprite: CodeSprite,
+        action: SpriteActionName,
+        args: readonly string[],
+    ): readonly ActionArgument[] {
         const argsQueue = args.slice();
         const spriteArgs: ActionArgument[] = [];
         const argTypeVals = spriteActionArguments[action];
@@ -22,21 +28,25 @@ export namespace SpriteActions {
             const arg = argsQueue.shift();
             if(arg === undefined) throw new Error(`No argument provided for ${typeVal.name} in ${action}!`);
 
-            spriteArgs.push(typeVal.parse(arg));
+            spriteArgs.push(typeVal.parse(sprite, arg));
         }
 
         return spriteArgs;
     }
 
-    export function createActions(action: string, args: readonly string[]): readonly SpriteAction[] {
+    export function createActions(
+        sprite: CodeSprite,
+        action: string,
+        args: readonly string[],
+    ): readonly SpriteAction[] {
         const spriteAction = SpriteActions.verifyAction(action);
-        const spriteArgs = SpriteActions.verifyArguments(spriteAction, args);
+        const spriteArgs = SpriteActions.verifyArguments(sprite, spriteAction, args);
 
         switch(spriteAction) {
             case SpriteActionName.Initialize: {
                 return [
-                    ...createActions("goto", ["0", "0"]),
-                    ...createActions("point", ["90"]),
+                    ...createActions(sprite, "goto", ["0", "0"]),
+                    ...createActions(sprite, "point", ["90"]),
                 ];
             }
             default: return [new SpriteAction(spriteAction, spriteArgs)];

@@ -11,5 +11,11 @@ export const CodeType = {
     Broadcast: 11,
     Variable: 12,
     List: 13,
+    Field: 'field',
 } as const;
 export type CodeType = ObjectValues<typeof CodeType>;
+
+// export const FieldType = {
+//     Costume: 'costume',
+// } as const;
+// export type FieldType = ObjectValues<typeof FieldType>;

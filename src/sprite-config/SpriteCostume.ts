@@ -1,4 +1,3 @@
-import path from "path";
 import sizeOf from 'image-size';
 import { CodeFile } from "./CodeFile";
 
@@ -6,7 +5,7 @@ export class SpriteCostume {
     // readonly uuid = randomUUID();
 
     constructor(
-        private readonly name: string,
+        readonly name: string,
         private readonly path: string,
     ) {}
 

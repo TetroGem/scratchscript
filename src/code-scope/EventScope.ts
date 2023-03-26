@@ -4,6 +4,7 @@ import { CodeScope } from "./CodeScope";
 import { v4 as uuidv4 } from 'uuid';
 import { EventField } from "./EventField";
 import { SpriteActions } from "../code-action/SpriteActions";
+import { CodeSprite } from "../code-sprite/CodeSprite";
 
 export const EventType = {
     OnFlag: 'event_whenflagclicked',
@@ -17,6 +18,7 @@ export class EventScope extends CodeScope {
     private actions: SpriteAction[] = [];
 
     constructor(
+        private readonly sprite: CodeSprite,
         private readonly event: EventType,
         private readonly fields: readonly EventField[],
     ) {
@@ -31,7 +33,7 @@ export class EventScope extends CodeScope {
         if(command.startsWith('@')) {
             const actionName = command.substring(1);
             const args = comps.slice(1);
-            const codeActions = SpriteActions.createActions(actionName, args);
+            const codeActions = SpriteActions.createActions(this.sprite, actionName, args);
 
             this.addActions(...codeActions);
         } else throw new Error(`Unknown command: ${command}! (${line})`);
